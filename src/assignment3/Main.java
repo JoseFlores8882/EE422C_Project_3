@@ -4,12 +4,12 @@
  * Jose Flores
  * jf33676
  * 16325
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Nikhil Jalla
+ * nj5473
+ * 16325
  * Slip days used: <0>
  * Git URL: https://github.com/JoseFlores8882/EE422C_Project_3
- * Summer 2019
+ * Spring 2020
  */
 
 
@@ -38,10 +38,16 @@ public class Main {
 			ps = System.out;			// default output to Stdout
 		}
 		initialize();
-		ArrayList<String> input = parse(kb);
-		ArrayList<String> ladder = getWordLadderBFS(input.get(0),input.get(1));
-		printLadder(ladder);
-		// TODO methods to read in words, output ladder
+		while(true) 
+		{
+			ArrayList<String> input = parse(kb);
+			if(input.size()==0)			//if empty array, input was quit
+			{
+				break;
+			}
+			ArrayList<String> ladder = getWordLadderBFS(input.get(0),input.get(1));
+			printLadder(ladder);
+		}
 	}
 	
 	public static void initialize() {
@@ -60,7 +66,7 @@ public class Main {
 	public static ArrayList<String> parse(Scanner keyboard) {
 		String word;
 		ArrayList<String> inWords = new ArrayList<String>();
-		word = keyboard.nextLine();
+		word = keyboard.next();
 		if(word.contentEquals("/quit")) 
 		{
 			return inWords;
@@ -68,7 +74,7 @@ public class Main {
 		else 
 		{
 			inWords.add(word.toUpperCase());
-			word = keyboard.nextLine();
+			word = keyboard.next();
 			inWords.add(word.toUpperCase());
 			return inWords;
 		}
@@ -126,6 +132,8 @@ public class Main {
 	}
 	
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
+    	String startTemp = start.toUpperCase();
+    	String endTemp = end.toUpperCase();
     	HashMap <String,String> graph = new HashMap<String, String>();
     	Iterator<String> it = dictionary.iterator();
 		while(it.hasNext())
@@ -133,16 +141,15 @@ public class Main {
 			graph.put(it.next(), "");		//create unmapped graph of dictionary words
 		}
 		Queue<String> queue = new LinkedList<String>();
-		graph.put(start,"start");           //mark start as discovered
-		queue.add(start);                   //add to queue
+		graph.put(startTemp,"start");           //mark start as discovered
+		queue.add(startTemp);                   //add to queue
 		while(!queue.isEmpty())             //begin BFS
 		{
 			String checkParent = queue.remove();	//get head of queue
-			if(checkParent.contentEquals(end))      //if found a path to end
+			if(checkParent.contentEquals(endTemp))      //if found a path to end
 			{
-				//TODO construct arraylist of path from end to start using graph and return it, must be lower case 
 				ArrayList<String> ladder = new ArrayList<String>();
-				String path = end;
+				String path = endTemp;
 				while(!path.equals("start"))    	//from end all the way to start
 				{
 					ladder.add(path);
@@ -155,16 +162,17 @@ public class Main {
 			for(int i=0;i < parentWord.length;i++)
 			{
 				char tempChar = parentWord[i];      //store character we are modifying
-				for(char letter = 'a';letter <= 'z';letter++)	//for all possible 1 letter change combinations at spot i
+				for(char letter = 'A';letter <= 'Z';letter++)	//for all possible 1 letter change combinations at spot i
 				{
 					parentWord[i] = letter;                     //insert letter
 					String checkWord = new String(parentWord);
-					if(graph.get(checkWord).contentEquals("") && dictionary.contains(checkWord)) 	//if not already mapped to graph(not visited = empty string) and valid word in the dictionary
+					if(dictionary.contains(checkWord) && graph.get(checkWord).contentEquals("") ) 	//if not already mapped to graph(not visited = empty string) and valid word in the dictionary
 					{
 						graph.put(checkWord,checkParent);                                   //map to graph with parent word, this new word is now considered visited
 						queue.add(checkWord);                                               //add to queue as a new parent word to check
 					}
 				}
+				parentWord[i] = tempChar;           //restore character, move on to next
 			}
 		} 
 		//BFS failed to find a ladder 
@@ -191,7 +199,6 @@ public class Main {
                 System.out.println(iterator.next().toLowerCase());
             }
         }
-		
 	}
 	// TODO
 	// Other private static methods here
