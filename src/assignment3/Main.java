@@ -16,10 +16,12 @@
 package assignment3;
 import java.util.*;
 import java.io.*;
+import java.lang.StringBuilder;
 
 public class Main {
 	
 	public static Set <String> dictionary;
+	public static ArrayList<String> dfsLadder;
 	// static variables and constants only here.
 	
 	public static void main(String[] args) throws Exception {
@@ -47,6 +49,7 @@ public class Main {
 		// We will call this method before running our JUNIT tests.  So call it 
 		// only once at the start of main.
 		dictionary = makeDictionary();
+		dfsLadder = new ArrayList<>();
 	}
 	
 	/**
@@ -76,8 +79,50 @@ public class Main {
 		// Returned list should be ordered start to end.  Include start and end.
 		// If ladder is empty, return list with just start and end.
 		// TODO some code
-		
-		return null; // replace this line later with real return
+		boolean found;
+		dfsLadder.add(start);
+		Set<String> dictCopy = makeDictionary();
+		dictCopy.remove(start.toUpperCase());
+		for(int i = 0; i < start.length(); i++) {
+			for(char j = 'a'; j < 'z'; j++) {
+				if(start.charAt(i) != j) {
+					StringBuilder next = new StringBuilder(start);
+					next.setCharAt(i, j);
+					if(dictCopy.remove(next.toString().toUpperCase())) {
+						dfsLadder.add(next.toString());
+						found = getWordLadderDFS(next.toString(), end, dictCopy, 0);
+						if(found) return dfsLadder;
+						else dfsLadder.remove(1);
+					}
+				}
+			}
+		}
+		if(dfsLadder.size() == 1) {
+			dfsLadder.add(end);
+		}
+		return dfsLadder;
+	}
+	
+	private static boolean getWordLadderDFS(String start, String end, Set<String> dictCopy, int index) {
+		boolean found;
+		if(start.contentEquals(end)) {
+			return true;
+		}
+		for(int i = 0; i < start.length(); i++) {
+			for(char j = 'a'; j < 'z'; j++) {
+				if(start.charAt(i) != j && i != index) {
+					StringBuilder next = new StringBuilder(start);
+					next.setCharAt(i, j);
+					if(dictCopy.remove(next.toString().toUpperCase())) {
+						dfsLadder.add(next.toString());
+						found = getWordLadderDFS(next.toString(), end, dictCopy, i);
+						if(found) return true;
+						else dfsLadder.remove(dfsLadder.size()-1);
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
@@ -131,11 +176,22 @@ public class Main {
     
 	
 	public static void printLadder(ArrayList<String> ladder) {
-		Iterator<String> iterator = ladder.iterator();
-		while(iterator.hasNext())
-		{
-			System.out.println(iterator.next().toLowerCase());
-		}
+		StringBuilder output;
+        if(ladder.size() == 2) {
+            output = new StringBuilder("no word ladder can be found between ");
+        } else {
+            output = new StringBuilder("a " + Integer.toString(ladder.size()-2) + "-rung ladder exists between ");
+        }
+        output.append(ladder.get(0) + " and " + ladder.get(ladder.size()-1) + ".");
+        System.out.println(output.toString());
+        if(ladder.size() != 2) {
+            Iterator<String> iterator = ladder.iterator();
+            while(iterator.hasNext())
+            {
+                System.out.println(iterator.next().toLowerCase());
+            }
+        }
+		
 	}
 	// TODO
 	// Other private static methods here
