@@ -47,6 +47,8 @@ public class Main {
 			}
 			ArrayList<String> ladder = getWordLadderBFS(input.get(0),input.get(1));
 			printLadder(ladder);
+			ladder = getWordLadderDFS(input.get(0),input.get(1));
+			printLadder(ladder);
 		}
 	}
 	
@@ -90,6 +92,18 @@ public class Main {
 		Set<String> dictCopy = makeDictionary();
 		dictCopy.remove(start.toUpperCase());
 		for(int i = 0; i < start.length(); i++) {
+			if(start.charAt(i) != end.charAt(i))
+			{
+				char endChar = end.charAt(i);
+				StringBuilder next = new StringBuilder(start);
+				next.setCharAt(i, endChar);
+				if(dictCopy.remove(next.toString().toUpperCase())) {
+					dfsLadder.add(next.toString());
+					found = getWordLadderDFS(next.toString(), end, dictCopy, i);
+					if(found) return dfsLadder;
+					else dfsLadder.remove(1);
+				}
+			}
 			for(char j = 'a'; j < 'z'; j++) {
 				if(start.charAt(i) != j) {
 					StringBuilder next = new StringBuilder(start);
@@ -114,7 +128,26 @@ public class Main {
 		if(start.contentEquals(end)) {
 			return true;
 		}
+		int oneDiff = oneDiffChecker(start,end);
+		if(oneDiff!=-1) {
+			StringBuilder secondToLast = new StringBuilder(start);
+			secondToLast.setCharAt(oneDiff, end.charAt(oneDiff));
+			dfsLadder.add(secondToLast.toString());
+			return true;
+		}
 		for(int i = 0; i < start.length(); i++) {
+			if(i != index && start.charAt(i) != end.charAt(i))
+			{
+				char endChar = end.charAt(i);
+				StringBuilder next = new StringBuilder(start);
+				next.setCharAt(i, endChar);
+				if(dictCopy.remove(next.toString().toUpperCase())) {
+					dfsLadder.add(next.toString());
+					found = getWordLadderDFS(next.toString(), end, dictCopy, i);
+					if(found) return true;
+					else dfsLadder.remove(dfsLadder.size()-1);
+				}
+			}
 			for(char j = 'a'; j < 'z'; j++) {
 				if(start.charAt(i) != j && i != index) {
 					StringBuilder next = new StringBuilder(start);
@@ -130,7 +163,30 @@ public class Main {
 		}
 		return false;
 	}
-	
+	public static int oneDiffChecker(String currentWord, String end) {
+		int numSame = 0;
+		int index = 0;
+		for(int i =0;i < end.length();i++)
+		{
+			if(currentWord.charAt(i)==end.charAt(i))
+			{
+				numSame++;
+			}
+			else
+			{
+				index = i;
+			}
+		}
+		if((end.length()-numSame)==1)
+		{
+			return index;
+		}
+		else 
+		{
+			return -1;
+		}
+		
+	}
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
     	String startTemp = start.toUpperCase();
     	String endTemp = end.toUpperCase();
