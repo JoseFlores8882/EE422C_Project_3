@@ -49,6 +49,7 @@ public class Main {
 			printLadder(ladder);
 			ladder = getWordLadderDFS(input.get(0),input.get(1));
 			printLadder(ladder);
+			dfsLadder.clear();
 		}
 	}
 	
